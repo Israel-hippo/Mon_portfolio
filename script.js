@@ -1,68 +1,85 @@
 // ===============================
-// ANIMATION AU DÉFILEMENT
-// ===============================
-
-const elements = document.querySelectorAll(
-    ".section, .skill-card, .project-card, .contact-section"
-);
-
-const observer = new IntersectionObserver(
-    (entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("show");
-            }
-        });
-    },
-    {
-        threshold: 0.15
-    }
-);
-
-elements.forEach((element) => {
-    element.classList.add("hidden");
-    observer.observe(element);
-});
-
-// ===============================
 // MENU MOBILE
 // ===============================
 
 const menuToggle = document.getElementById("menu-toggle");
 const navMenu = document.getElementById("nav-menu");
 
-menuToggle.addEventListener("click", () => {
-
-    navMenu.classList.toggle("active");
+if (menuToggle && navMenu) {
 
     const icon = menuToggle.querySelector("i");
 
-    if (navMenu.classList.contains("active")) {
-        icon.classList.remove("fa-bars");
-        icon.classList.add("fa-xmark");
-    } else {
-        icon.classList.remove("fa-xmark");
-        icon.classList.add("fa-bars");
-    }
-
-});
-
-
-// Fermer le menu après avoir cliqué sur un lien
-
-const navLinks = navMenu.querySelectorAll("a");
-
-navLinks.forEach((link) => {
-
-    link.addEventListener("click", () => {
-
+    // Fermer le menu
+    const closeMenu = () => {
         navMenu.classList.remove("active");
+        menuToggle.setAttribute("aria-expanded", "false");
 
-        const icon = menuToggle.querySelector("i");
+        if (icon) {
+            icon.classList.remove("fa-xmark");
+            icon.classList.add("fa-bars");
+        }
+    };
 
-        icon.classList.remove("fa-xmark");
-        icon.classList.add("fa-bars");
+    // Ouvrir le menu
+    const openMenu = () => {
+        navMenu.classList.add("active");
+        menuToggle.setAttribute("aria-expanded", "true");
+
+        if (icon) {
+            icon.classList.remove("fa-bars");
+            icon.classList.add("fa-xmark");
+        }
+    };
+
+    // Bouton hamburger
+    menuToggle.addEventListener("click", () => {
+
+        if (navMenu.classList.contains("active")) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
 
     });
 
-});
+    // Fermer le menu lorsqu'on clique sur un lien
+    navMenu.querySelectorAll("a").forEach(link => {
+
+        link.addEventListener("click", () => {
+            closeMenu();
+        });
+
+    });
+
+    // Fermer le menu lorsqu'on clique en dehors
+    document.addEventListener("click", event => {
+
+        if (
+            navMenu.classList.contains("active") &&
+            !navMenu.contains(event.target) &&
+            !menuToggle.contains(event.target)
+        ) {
+            closeMenu();
+        }
+
+    });
+
+    // Fermer avec la touche Échap
+    document.addEventListener("keydown", event => {
+
+        if (event.key === "Escape") {
+            closeMenu();
+        }
+
+    });
+
+    // Fermer automatiquement si on repasse en écran ordinateur
+    window.addEventListener("resize", () => {
+
+        if (window.innerWidth > 900) {
+            closeMenu();
+        }
+
+    });
+
+}
